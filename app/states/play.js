@@ -4,31 +4,40 @@ import * as World from '../world';
 
 export default class extends Phaser.State {
   makeLevel(level) {
-    this.stage.backgroundColor = this.filter;
     const tiles = level.tiles;
-    const wallsByColor = {};
+    this.wallsByColor = {};
     Object.values(Colors).forEach((color) => {
-      wallsByColor[color] = [];
+      this.wallsByColor[color] = [];
     });
     for (let r = 0; r < tiles.length; r += 1) {
       for (let c = 0; c < tiles[r].length; c += 1) {
         if (tiles[r][c].isWall) {
-          wallsByColor[tiles[r][c].color].push({ r, c });
+          const tile = this.game.add.sprite(World.colToX(c), World.rowToY(r), 'white');
+          this.wallsByColor[tiles[r][c].color].push({ r, c, tile });
         }
       }
     }
 
     Object.values(Colors).forEach((color) => {
-      wallsByColor[color].forEach(({ r, c }) => {
-        const tile = this.game.add.sprite(World.colToX(c), World.rowToY(r), 'white');
+      this.wallsByColor[color].forEach(({ tile }) => {
         tile.tint = World.renderWallColor(color, this.filter);
         tile.width = World.TILE_SIZE;
         tile.height = World.TILE_SIZE;
-        if (World.isCollidable(color, this.filter)) {
-          this.collisionGroup.add(tile);
-        }
         this.game.physics.arcade.enable(tile);
         tile.body.immovable = true;
+      });
+    });
+  }
+
+  updateFilter() {
+    this.stage.backgroundColor = this.filter;
+    Object.values(Colors).forEach((color) => {
+      this.wallsByColor[color].forEach(({ tile }) => {
+        if (World.isCollidable(color, this.filter)) {
+          this.collisionGroup.add(tile);
+        } else {
+          this.collisionGroup.remove(tile);
+        }
       });
     });
   }
@@ -82,12 +91,12 @@ export default class extends Phaser.State {
 
     this.input.keyboard.addKey(Phaser.Keyboard.OPEN_BRACKET).onDown.add(() => {
       this.filter = this.glasses[(this.glasses.indexOf(this.filter) + 1) % this.glasses.length];
-      this.renderLevel();
+      this.updateFilter();
     }, this);
     this.input.keyboard.addKey(Phaser.Keyboard.CLOSED_BRACKET).onDown.add(() => {
       this.filter = this.glasses[(this.glasses.indexOf(this.filter) - 1 + this.glasses.length)
         % this.glasses.length];
-      this.renderLevel();
+      this.updateFilter();
     }, this);
   }
 
