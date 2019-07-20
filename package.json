@@ -3,5 +3,19 @@
   "version": "0.1.0",
   "description": "polychromatic stealth",
   "repository": "https://github.com/gameless/48-secret-jam-july-2019.git",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2"
+  },
+  "eslintConfig": {
+    "extends": "airbnb-base",
+    "env": {
+      "browser": true
+    }
+  }
 }
