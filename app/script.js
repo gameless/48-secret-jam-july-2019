@@ -1,3 +1,5 @@
+const $ = require('jquery');
+
 let globalCtx;
 let canvas;
 const paused = false;
@@ -212,7 +214,7 @@ function frame() {
   window.requestAnimationFrame(frame);
 }
 
-function initialize() { // eslint-disable-line no-unused-vars
+function initialize() {
   canvas = document.getElementById('myCanvas');
 
   lightingCanvas.width = canvas.width;
@@ -240,3 +242,5 @@ $(document).keyup((event) => {
   const keycode = event.keyCode ? event.keyCode : event.which;
   keyDown[keycode] = false;
 });
+
+initialize();
