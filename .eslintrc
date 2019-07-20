@@ -4,6 +4,7 @@
     "browser": true
   },
   "rules": {
+  	"prefer-destructuring": off,
     "no-param-reassign": [
       "error",
       {
