@@ -7,6 +7,21 @@ const canvas = document.createElement('canvas');
 canvas.width = 320;
 canvas.height = 240;
 const globalCtx = canvas.getContext('2d');
+const screenScale = { };
+
+function calculateScale() {
+  screenCanvas.width = window.innerWidth;
+  screenCanvas.height = window.innerHeight;
+  screenScale.scale = Math.max(1, Math.floor(Math.min(screenCanvas.width / canvas.width,
+    screenCanvas.height / canvas.height)));
+  screenScale.w = screenScale.scale * canvas.width;
+  screenScale.h = screenScale.scale * canvas.height;
+  screenScale.x = (screenCanvas.width - screenScale.w) / 2;
+  screenScale.y = (screenCanvas.height - screenScale.h) / 2;
+}
+
+calculateScale();
+
 const paused = false;
 let lastFrameTime;
 
@@ -210,13 +225,7 @@ function render() {
 
   // draw to screen
   screenCtx.imageSmoothingEnabled = false;
-  const scale = Math.max(1, Math.floor(Math.min(screenCanvas.width / canvas.width,
-    screenCanvas.height / canvas.height)));
-  const w = scale * canvas.width;
-  const h = scale * canvas.height;
-  const x = (screenCanvas.width - w) / 2;
-  const y = (screenCanvas.height - h) / 2;
-  screenCtx.drawImage(canvas, x, y, w, h);
+  screenCtx.drawImage(canvas, screenScale.x, screenScale.y, screenScale.w, screenScale.h);
 }
 
 function frame() {
@@ -230,16 +239,12 @@ function frame() {
 }
 
 function initialize() {
-  screenCanvas.width = window.innerWidth;
-  screenCanvas.height = window.innerHeight;
-
   lightingCanvas.width = canvas.width;
   lightingCanvas.height = canvas.height;
 
   screenCanvas.addEventListener('mousemove', (event) => {
-    mouse.x = event.offsetX;
-    mouse.y = event.offsetY;
-    // TODO calculate the actual coordinates
+    mouse.x = (event.offsetX - screenScale.x) / screenScale.scale;
+    mouse.y = (event.offsetY - screenScale.y) / screenScale.scale;
     for (let i = 0; i < lightingOffsets.length; i += 1) {
       lightingPolygons[i] = calculateLightPolygon(plus(mouse, lightingOffsets[i]), demoLines);
     }
@@ -248,6 +253,10 @@ function initialize() {
   lastFrameTime = Date.now();
   window.requestAnimationFrame(frame);
 }
+
+$(window).resize(() => {
+  calculateScale();
+});
 
 $(document).keydown((event) => {
   const keycode = event.keyCode ? event.keyCode : event.which;
