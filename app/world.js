@@ -28,3 +28,7 @@ export function rowToY(row) {
 export function renderWallColor(color, filter) {
   return color === filter ? color : Colors.BLACK;
 }
+
+export function isCollidable(color, filter) {
+  return color !== filter;
+}
