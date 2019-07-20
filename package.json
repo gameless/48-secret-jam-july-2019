@@ -5,8 +5,8 @@
   "repository": "https://github.com/gameless/48-secret-jam-july-2019.git",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint .",
-    "test": "eslint app",
+    "lint": "eslint app",
+    "test": "npm run lint",
     "start": "brunch watch --server",
     "build": "brunch build --production"
   },
