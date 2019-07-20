@@ -12,12 +12,13 @@
   },
   "devDependencies": {
     "auto-reload-brunch": "^2.7.1",
+    "babel-brunch": "^7.0.1",
     "brunch": "^2.10.17",
     "eslint": "^6.0.1",
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.2"
   },
   "dependencies": {
-    "jquery": "^3.4.1"
+    "phaser-ce": "^2.13.2"
   }
 }

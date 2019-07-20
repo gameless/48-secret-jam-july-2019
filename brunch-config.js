@@ -10,8 +10,13 @@ module.exports = {
   modules: {
     autoRequire: {
       'app.js': [
-        'script',
+        'initialize',
       ],
     },
+  },
+  npm: {
+    static: [
+      'node_modules/phaser-ce/build/phaser.js',
+    ],
   },
 };
