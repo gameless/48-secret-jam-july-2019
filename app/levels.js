@@ -11,10 +11,18 @@ for (let r = 0; r < 10; r += 1) {
   }
   level.tiles.push(row);
 }
-level.tiles[7][1] = World.Tiles.WALL_RED;
-level.tiles[7][2] = World.Tiles.WALL_RED;
-level.tiles[8][1] = World.Tiles.WALL_RED;
-level.tiles[8][2] = World.Tiles.WALL_RED;
+level.tiles[1][1] = World.Tiles.WALL_RED;
+level.tiles[1][2] = World.Tiles.WALL_RED;
+level.tiles[1][3] = World.Tiles.WALL_BLACK;
+level.tiles[1][4] = World.Tiles.WALL_BLACK;
+level.tiles[2][1] = World.Tiles.WALL_BLUE;
+level.tiles[2][2] = World.Tiles.WALL_BLUE;
+level.tiles[2][3] = World.Tiles.WALL_YELLOW;
+level.tiles[2][4] = World.Tiles.WALL_YELLOW;
+level.tiles[3][1] = World.Tiles.WALL_BLACK;
+level.tiles[3][2] = World.Tiles.WALL_BLACK;
+level.tiles[3][3] = World.Tiles.WALL_BLACK;
+level.tiles[3][4] = World.Tiles.WALL_BLACK;
 
 levels.push(level);
 

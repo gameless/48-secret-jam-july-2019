@@ -63,14 +63,32 @@ export default class extends Phaser.State {
     this.makeLevel(Levels[0]);
 
     this.movables = [];
-    this.player = this.makeMovable(0, 0, 'insect');
+    this.player = this.makeMovable(100, 10, 'insect');
 
-    const otherBug = this.game.add.sprite(20, 30, 'insect');
+    const otherBug = this.game.add.sprite(30, 40, 'insect');
     this.collisionGroup.add(otherBug);
     this.game.physics.arcade.enable(otherBug);
     otherBug.body.immovable = true;
 
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    this.glasses = [
+      null,
+      Colors.RED,
+      Colors.YELLOW,
+      Colors.BLUE,
+      Colors.GREEN,
+    ];
+
+    this.input.keyboard.addKey(Phaser.Keyboard.OPEN_BRACKET).onDown.add(() => {
+      this.filter = this.glasses[(this.glasses.indexOf(this.filter) + 1) % this.glasses.length];
+      this.renderLevel();
+    }, this);
+    this.input.keyboard.addKey(Phaser.Keyboard.CLOSED_BRACKET).onDown.add(() => {
+      this.filter = this.glasses[(this.glasses.indexOf(this.filter) - 1 + this.glasses.length)
+        % this.glasses.length];
+      this.renderLevel();
+    }, this);
   }
 
   update() {
