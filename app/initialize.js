@@ -6,6 +6,9 @@ const game = new Phaser.Game({
   height: 160,
   parent: 'parent',
   antialias: false,
+  physicsConfig: {
+    arcade: true,
+  },
 });
 
 game.state.add('load', loadState);
