@@ -26,6 +26,24 @@ export default class extends Phaser.State {
     otherBug.body.immovable = true;
 
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    this.glasses = [
+      null,
+      Colors.RED,
+      Colors.YELLOW,
+      Colors.BLUE,
+      Colors.GREEN,
+    ];
+
+    this.input.keyboard.addKey(Phaser.Keyboard.OPEN_BRACKET).onDown.add(() => {
+      this.filter = this.glasses[(this.glasses.indexOf(this.filter) + 1) % this.glasses.length];
+      this.renderLevel();
+    }, this);
+    this.input.keyboard.addKey(Phaser.Keyboard.CLOSED_BRACKET).onDown.add(() => {
+      this.filter = this.glasses[(this.glasses.indexOf(this.filter) - 1 + this.glasses.length)
+        % this.glasses.length];
+      this.renderLevel();
+    }, this);
   }
 
   update() {
@@ -48,7 +66,7 @@ export default class extends Phaser.State {
   }
 
   renderLevel() {
-    this.stage.backgroundColor = this.filter;
+    this.stage.backgroundColor = !this.filter ? 0xffffff : this.filter;
     const tiles = this.level.tiles;
     const wallsByColor = {};
     Object.values(Colors).forEach((color) => {
@@ -63,13 +81,16 @@ export default class extends Phaser.State {
     }
 
     const graphics = this.tileGraphics;
+    graphics.clear();
 
     Object.values(Colors).forEach((color) => {
-      graphics.beginFill(World.renderWallColor(color, this.filter));
-      wallsByColor[color].forEach(({ r, c }) => {
-        graphics.drawRect(World.colToX(c), World.rowToY(r), World.TILE_SIZE, World.TILE_SIZE);
-      });
-      graphics.endFill();
+      if (color !== this.filter) {
+        graphics.beginFill(World.renderWallColor(color, this.filter));
+        wallsByColor[color].forEach(({ r, c }) => {
+          graphics.drawRect(World.colToX(c), World.rowToY(r), World.TILE_SIZE, World.TILE_SIZE);
+        });
+        graphics.endFill();
+      }
     });
   }
 }
