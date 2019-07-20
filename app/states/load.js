@@ -12,6 +12,7 @@ function loadImage(game, name) {
 function loadImages(game) {
   loadImage(game, 'blank');
   loadImage(game, 'insect');
+  loadImage(game, 'white');
 }
 
 export default function (game) {

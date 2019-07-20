@@ -3,6 +3,36 @@ import Levels from '../levels';
 import * as World from '../world';
 
 export default class extends Phaser.State {
+  makeLevel(level) {
+    this.stage.backgroundColor = this.filter;
+    const tiles = level.tiles;
+    const wallsByColor = {};
+    Object.values(Colors).forEach((color) => {
+      wallsByColor[color] = [];
+    });
+    for (let r = 0; r < tiles.length; r += 1) {
+      for (let c = 0; c < tiles[r].length; c += 1) {
+        if (tiles[r][c].isWall) {
+          wallsByColor[tiles[r][c].color].push({ r, c });
+        }
+      }
+    }
+
+    Object.values(Colors).forEach((color) => {
+      wallsByColor[color].forEach(({ r, c }) => {
+        const tile = this.game.add.sprite(World.colToX(c), World.rowToY(r), 'white');
+        tile.tint = World.renderWallColor(color, this.filter);
+        tile.width = World.TILE_SIZE;
+        tile.height = World.TILE_SIZE;
+        if (World.isCollidable(color, this.filter)) {
+          this.collisionGroup.add(tile);
+        }
+        this.game.physics.arcade.enable(tile);
+        tile.body.immovable = true;
+      });
+    });
+  }
+
   makeMovable(x, y, key) {
     const image = this.game.add.sprite(x, y, key);
     const blank = this.game.add.sprite(x, y, 'blank');
@@ -28,19 +58,16 @@ export default class extends Phaser.State {
   create() {
     this.stage.backgroundColor = '#683f09';
 
-    this.tileGraphics = this.game.add.graphics(0, 0);
-
-    this.level = Levels[0];
-    this.filter = Colors.YELLOW;
-    this.renderLevel();
-
     this.collisionGroup = this.game.add.group();
+    this.filter = Colors.YELLOW;
+    this.makeLevel(Levels[0]);
+
     this.movables = [];
     this.player = this.makeMovable(0, 0, 'insect');
 
     const otherBug = this.game.add.sprite(20, 30, 'insect');
     this.collisionGroup.add(otherBug);
-    this.game.physics.arcade.enable(otherBug, true);
+    this.game.physics.arcade.enable(otherBug);
     otherBug.body.immovable = true;
 
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -65,31 +92,5 @@ export default class extends Phaser.State {
     } else {
       this.player.body.body.velocity.y = 0;
     }
-  }
-
-  renderLevel() {
-    this.stage.backgroundColor = this.filter;
-    const tiles = this.level.tiles;
-    const wallsByColor = {};
-    Object.values(Colors).forEach((color) => {
-      wallsByColor[color] = [];
-    });
-    for (let r = 0; r < tiles.length; r += 1) {
-      for (let c = 0; c < tiles[r].length; c += 1) {
-        if (tiles[r][c].isWall) {
-          wallsByColor[tiles[r][c].color].push({ r, c });
-        }
-      }
-    }
-
-    const graphics = this.tileGraphics;
-
-    Object.values(Colors).forEach((color) => {
-      graphics.beginFill(World.renderWallColor(color, this.filter));
-      wallsByColor[color].forEach(({ r, c }) => {
-        graphics.drawRect(World.colToX(c), World.rowToY(r), World.TILE_SIZE, World.TILE_SIZE);
-      });
-      graphics.endFill();
-    });
   }
 }
