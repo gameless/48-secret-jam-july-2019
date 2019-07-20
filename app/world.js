@@ -26,6 +26,7 @@ export function rowToY(row) {
 }
 
 export function renderWallColor(color, filter) {
+  if (!filter) return color;
   return color === filter ? color : Colors.BLACK;
 }
 
