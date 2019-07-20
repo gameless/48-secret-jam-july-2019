@@ -30,7 +30,7 @@ export default class extends Phaser.State {
 
     this.tileGraphics = this.game.add.graphics(0, 0);
 
-    this.level = Levels[0]; // eslint-disable-line
+    this.level = Levels[0];
     this.filter = Colors.YELLOW;
     this.renderLevel();
 
