@@ -14,7 +14,7 @@ $ npm run build
 ```
 Before committing, check that the code follows the [Airbnb style guide][airbnb]:
 ```
-$ npm run lint
+$ npm run test
 ```
 
 [airbnb]: https://github.com/airbnb/javascript
