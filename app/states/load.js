@@ -16,7 +16,7 @@ function loadImages(game) {
 export default function (game) {
   return {
     preload() {
-      usePixelGraphics(game, 6);
+      usePixelGraphics(game, 3);
       loadImages(game);
     },
 
