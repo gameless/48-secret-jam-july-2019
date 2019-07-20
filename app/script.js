@@ -1,7 +1,12 @@
 const $ = require('jquery');
 
-let globalCtx;
-let canvas;
+const screenCanvas = document.getElementById('myCanvas');
+const screenCtx = screenCanvas.getContext('2d');
+
+const canvas = document.createElement('canvas');
+canvas.width = 320;
+canvas.height = 240;
+const globalCtx = canvas.getContext('2d');
 const paused = false;
 let lastFrameTime;
 
@@ -202,6 +207,16 @@ function render() {
   drawBackground(globalCtx, '#ffffff');
   drawLines();
   drawLighting();
+
+  // draw to screen
+  screenCtx.imageSmoothingEnabled = false;
+  const scale = Math.max(1, Math.floor(Math.min(screenCanvas.width / canvas.width,
+    screenCanvas.height / canvas.height)));
+  const w = scale * canvas.width;
+  const h = scale * canvas.height;
+  const x = (screenCanvas.width - w) / 2;
+  const y = (screenCanvas.height - h) / 2;
+  screenCtx.drawImage(canvas, x, y, w, h);
 }
 
 function frame() {
@@ -215,23 +230,21 @@ function frame() {
 }
 
 function initialize() {
-  canvas = document.getElementById('myCanvas');
-
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  screenCanvas.width = window.innerWidth;
+  screenCanvas.height = window.innerHeight;
 
   lightingCanvas.width = canvas.width;
   lightingCanvas.height = canvas.height;
 
-  canvas.addEventListener('mousemove', (event) => {
+  screenCanvas.addEventListener('mousemove', (event) => {
     mouse.x = event.offsetX;
     mouse.y = event.offsetY;
+    // TODO calculate the actual coordinates
     for (let i = 0; i < lightingOffsets.length; i += 1) {
       lightingPolygons[i] = calculateLightPolygon(plus(mouse, lightingOffsets[i]), demoLines);
     }
   });
 
-  globalCtx = canvas.getContext('2d');
   lastFrameTime = Date.now();
   window.requestAnimationFrame(frame);
 }
