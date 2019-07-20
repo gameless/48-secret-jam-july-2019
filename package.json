@@ -12,15 +12,6 @@
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.2"
   },
-  "eslintConfig": {
-    "extends": "airbnb-base",
-    "env": {
-      "browser": true
-    },
-    "globals": {
-      "$": true
-    }
-  },
   "dependencies": {
     "express": "^4.17.1"
   }
