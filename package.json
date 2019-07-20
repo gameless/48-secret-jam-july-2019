@@ -5,14 +5,18 @@
   "repository": "https://github.com/gameless/48-secret-jam-july-2019.git",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start": "brunch watch --server",
+    "build": "brunch build --production"
   },
   "devDependencies": {
+    "auto-reload-brunch": "^2.7.1",
+    "brunch": "^2.10.17",
     "eslint": "^6.0.1",
     "eslint-config-airbnb-base": "^13.2.0",
     "eslint-plugin-import": "^2.18.2"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "jquery": "^3.4.1"
   }
 }
