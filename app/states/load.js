@@ -10,6 +10,7 @@ function loadImage(game, name) {
 }
 
 function loadImages(game) {
+  loadImage(game, 'blank');
   loadImage(game, 'insect');
 }
 
