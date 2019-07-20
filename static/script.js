@@ -1,4 +1,4 @@
-let ctx;
+let globalCtx;
 let canvas;
 const paused = false;
 let lastFrameTime;
@@ -8,7 +8,7 @@ const keyDown = [];
 const mouse = { x: 0, y: 0 };
 
 // TODO: maybe storing lists of points in polygons is easier?
-const lines = [
+const demoLines = [
   {
     x1: 10, y1: 10, x2: 630, y2: 10,
   },
@@ -56,15 +56,18 @@ const lightingOffsets = [
 ];
 const SUBLIGHTS = 9;
 const RADIUS = 3;
-for (let i = 0; i < SUBLIGHTS - 2; i++) {
-  lightingOffsets.push({ x: RADIUS * Math.cos(2 * Math.PI * i / SUBLIGHTS), y: RADIUS * Math.sin(2 * Math.PI * i / SUBLIGHTS) });
+for (let i = 0; i < SUBLIGHTS - 2; i += 1) {
+  lightingOffsets.push({
+    x: RADIUS * Math.cos(2 * Math.PI * i / SUBLIGHTS),
+    y: RADIUS * Math.sin(2 * Math.PI * i / SUBLIGHTS),
+  });
 }
 
-function isKeyDown(keycode) {
-  return keyDown[keycode];
-}
+// function isKeyDown(keycode) {
+//   return keyDown[keycode];
+// }
 
-function update(delta) {
+function update(/* delta */) {
 
 }
 
@@ -77,7 +80,8 @@ function plus(a, b) {
 // returns t1 (not exactly the modular choice but)
 function intersect(ray, segment) {
   // TODO check for parallel
-  const t2 = (ray.dx * (segment.y - ray.y) + ray.dy * (ray.x - segment.x)) / (segment.dx * ray.dy - segment.dy * ray.dx);
+  const t2 = (ray.dx * (segment.y - ray.y) + ray.dy * (ray.x - segment.x))
+    / (segment.dx * ray.dy - segment.dy * ray.dx);
   const t1 = (segment.x + segment.dx * t2 - ray.x) / ray.dx; // TODO what if dx == 0?
   if (t1 >= 0 && t2 >= 0 && t2 <= 1) {
     return t1;
@@ -86,7 +90,7 @@ function intersect(ray, segment) {
 }
 
 function angleOffsetRay(ray, dangle) {
-  const magnitude = Math.sqrt(Math.pow(ray.dx, 2) + Math.pow(ray.dy, 2));
+  const magnitude = Math.sqrt((ray.dx ** 2) + (ray.dy ** 2));
   const angle = Math.atan2(ray.dx, ray.dy) + dangle;
   return {
     x: ray.x, y: ray.y, dx: magnitude * Math.sin(angle), dy: magnitude * Math.cos(angle),
@@ -94,21 +98,21 @@ function angleOffsetRay(ray, dangle) {
 }
 
 function raycast(ray, lines) {
-  let min_t1 = Infinity;
+  let t1Min = Infinity;
 
-  for (const line of lines) {
+  lines.forEach((line) => {
     const t1 = intersect(ray, {
       x: line.x1, y: line.y1, dx: line.x2 - line.x1, dy: line.y2 - line.y1,
     });
 
-    if (t1 != null && t1 < min_t1) {
-      min_t1 = t1;
+    if (t1 != null && t1 < t1Min) {
+      t1Min = t1;
     }
-  }
+  });
 
   // TODO what if unbounded? canvas edge or something?
-  if (min_t1 == Infinity) return null;
-  return { x: ray.x + ray.dx * min_t1, y: ray.y + ray.dy * min_t1 };
+  if (t1Min === Infinity) return null;
+  return { x: ray.x + ray.dx * t1Min, y: ray.y + ray.dy * t1Min };
 }
 
 function calculateLightPolygon(point, lines) {
@@ -116,28 +120,32 @@ function calculateLightPolygon(point, lines) {
 
   const pts = [];
 
-  for (const line of lines) {
+  lines.forEach((line) => {
     const pt1 = { x: line.x1, y: line.y1 };
     const pt2 = { x: line.x2, y: line.y2 };
 
-    if (!pts.some(pt => (pt.x == pt1.x && pt.y == pt1.y))) pts.push(pt1);
-    if (!pts.some(pt => (pt.x == pt2.x && pt.y == pt2.y))) pts.push(pt2);
-  }
+    if (!pts.some(pt => (pt.x === pt1.x && pt.y === pt1.y))) pts.push(pt1);
+    if (!pts.some(pt => (pt.x === pt2.x && pt.y === pt2.y))) pts.push(pt2);
+  });
 
-  for (const pt of pts) {
+  pts.forEach((pt) => {
     const ray = {
       x: point.x, y: point.y, dx: pt.x - point.x, dy: pt.y - point.y,
     };
     const rays = [angleOffsetRay(ray, -0.00001), ray, angleOffsetRay(ray, 0.00001)];
 
-    for (const r of rays) {
+    rays.forEach((r) => {
       const result = raycast(r, lines);
       if (result != null) intersections.push(result);
-    }
-  }
+    });
+  });
 
   // sort intersections
-  intersections.sort((a, b) => (Math.atan2(b.x - point.x, b.y - point.y) - Math.atan2(a.x - point.x, a.y - point.y)));
+  intersections.sort((a, b) => {
+    const angle1 = Math.atan2(b.x - point.x, b.y - point.y);
+    const angle2 = Math.atan2(a.x - point.x, a.y - point.y);
+    return angle1 - angle2;
+  });
   return intersections;
 }
 
@@ -148,13 +156,13 @@ function drawBackground(ctx, fillStyle) {
 }
 
 function drawLines() {
-  ctx.strokeStyle = '#fbfbfb';
-  for (const line of lines) {
-    ctx.beginPath();
-    ctx.moveTo(line.x1, line.y1);
-    ctx.lineTo(line.x2, line.y2);
-    ctx.stroke();
-  }
+  globalCtx.strokeStyle = '#fbfbfb';
+  demoLines.forEach((line) => {
+    globalCtx.beginPath();
+    globalCtx.moveTo(line.x1, line.y1);
+    globalCtx.lineTo(line.x2, line.y2);
+    globalCtx.stroke();
+  });
 }
 
 const lightingCanvas = document.createElement('canvas');
@@ -164,30 +172,32 @@ function drawLighting() {
   drawBackground(lightingCtx, '#000000');
   lightingCtx.globalCompositeOperation = 'lighter';
   lightingCtx.fillStyle = `rgb(${255 / SUBLIGHTS},${255 / SUBLIGHTS},${255 / SUBLIGHTS})`;
-  for (const lightingPolygon of lightingPolygons) {
+  lightingPolygons.forEach((lightingPolygon) => {
     if (lightingPolygon.length >= 1) {
       lightingCtx.beginPath();
       lightingCtx.moveTo(lightingPolygon[0].x, lightingPolygon[0].y);
-      for (let i = 1; i < lightingPolygon.length; i++) {
+      for (let i = 1; i < lightingPolygon.length; i += 1) {
         lightingCtx.lineTo(lightingPolygon[i].x, lightingPolygon[i].y);
       }
       lightingCtx.fill();
     }
-  }
+  });
 
   // lightingCtx.globalCompositeOperation = 'multiply';
-  // let lightingGradient = lightingCtx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 300);
+  // let lightingGradient = lightingCtx.createRadialGradient(
+  //   mouse.x, mouse.y, 0, mouse.x, mouse.y, 300,
+  // );
   // lightingGradient.addColorStop (0, '#558a86');
   // lightingGradient.addColorStop (1, '#000000');
   // lightingCtx.fillStyle = lightingGradient;
   // lightingCtx.fillRect(0, 0, lightingCanvas.width, lightingCanvas.height);
 
-  ctx.globalCompositeOperation = 'multiply';
-  ctx.drawImage(lightingCanvas, 0, 0);
+  globalCtx.globalCompositeOperation = 'multiply';
+  globalCtx.drawImage(lightingCanvas, 0, 0);
 }
 
 function render() {
-  drawBackground(ctx, '#ffffff');
+  drawBackground(globalCtx, '#ffffff');
   drawLines();
   drawLighting();
 }
@@ -202,7 +212,7 @@ function frame() {
   window.requestAnimationFrame(frame);
 }
 
-function initialize() {
+function initialize() { // eslint-disable-line no-unused-vars
   canvas = document.getElementById('myCanvas');
 
   lightingCanvas.width = canvas.width;
@@ -211,12 +221,12 @@ function initialize() {
   canvas.addEventListener('mousemove', (event) => {
     mouse.x = event.offsetX;
     mouse.y = event.offsetY;
-    for (let i = 0; i < lightingOffsets.length; i++) {
-      lightingPolygons[i] = calculateLightPolygon(plus(mouse, lightingOffsets[i]), lines);
+    for (let i = 0; i < lightingOffsets.length; i += 1) {
+      lightingPolygons[i] = calculateLightPolygon(plus(mouse, lightingOffsets[i]), demoLines);
     }
   });
 
-  ctx = canvas.getContext('2d');
+  globalCtx = canvas.getContext('2d');
   lastFrameTime = Date.now();
   window.requestAnimationFrame(frame);
 }

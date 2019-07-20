@@ -13,6 +13,6 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log('Okay, this is epic');
-  console.log(`Listening on port ${PORT}`);
+  console.log('Okay, this is epic'); // eslint-disable-line no-console
+  console.log(`Listening on port ${PORT}`); // eslint-disable-line no-console
 });
