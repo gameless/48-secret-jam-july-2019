@@ -1,5 +1,8 @@
 const $ = require('jquery');
 
+const insect = new Image();
+insect.src = 'insect.png';
+
 const screenCanvas = document.getElementById('myCanvas');
 const screenCtx = screenCanvas.getContext('2d');
 
@@ -216,6 +219,8 @@ function drawLighting() {
 
   globalCtx.globalCompositeOperation = 'multiply';
   globalCtx.drawImage(lightingCanvas, 0, 0);
+
+  globalCtx.drawImage(insect, 20, 20);
 }
 
 function render() {
