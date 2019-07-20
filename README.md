@@ -1,4 +1,4 @@
-# 48 Secret Jam - July 2019
+# 48 Secret Jam - July 2019 [![Build Status][status]][travis]
 
 Clone the repository, then install the dev packages:
 ```
@@ -18,3 +18,5 @@ $ npm run lint
 ```
 
 [airbnb]: https://github.com/airbnb/javascript
+[status]: https://travis-ci.com/gameless/48-secret-jam-july-2019.svg?branch=master
+[travis]: https://travis-ci.com/gameless/48-secret-jam-july-2019
