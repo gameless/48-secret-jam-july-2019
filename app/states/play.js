@@ -3,6 +3,28 @@ import Levels from '../levels';
 import * as World from '../world';
 
 export default class extends Phaser.State {
+  makeMovable(x, y, key) {
+    const image = this.game.add.sprite(x, y, key);
+    const blank = this.game.add.sprite(x, y, 'blank');
+    blank.width = image.width;
+    blank.height = image.height;
+
+    this.game.physics.arcade.enable(blank);
+    blank.body.collideWorldBounds = true;
+    this.collisionGroup.add(blank);
+
+    const movable = { body: blank, draw: image };
+    this.movables.push(movable);
+    return movable;
+  }
+
+  updateMovables() {
+    this.movables.forEach((movable) => {
+      movable.draw.x = Math.round(movable.body.x);
+      movable.draw.y = Math.round(movable.body.y);
+    });
+  }
+
   create() {
     this.stage.backgroundColor = '#683f09';
 
@@ -12,44 +34,36 @@ export default class extends Phaser.State {
     this.filter = Colors.YELLOW;
     this.renderLevel();
 
-    this.playerBod = this.game.add.sprite(0, 0, 'blank');
-    this.playerBod.width = 16;
-    this.playerBod.height = 16;
-    this.player = this.game.add.sprite(0, 0, 'insect');
+    this.collisionGroup = this.game.add.group();
+    this.movables = [];
+    this.player = this.makeMovable(0, 0, 'insect');
+
     const otherBug = this.game.add.sprite(20, 30, 'insect');
-
-    this.sprites = this.game.add.group();
-    this.sprites.add(this.playerBod);
-    this.sprites.add(otherBug);
-
-    this.game.physics.arcade.enable(this.game.world, true);
-
-    this.playerBod.body.collideWorldBounds = true;
-
+    this.collisionGroup.add(otherBug);
+    this.game.physics.arcade.enable(otherBug, true);
     otherBug.body.immovable = true;
 
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   update() {
-    this.game.physics.arcade.collide(this.sprites);
+    this.game.physics.arcade.collide(this.collisionGroup);
 
-    this.player.x = Math.round(this.playerBod.x);
-    this.player.y = Math.round(this.playerBod.y);
+    this.updateMovables();
 
     if (this.cursors.left.isDown) {
-      this.playerBod.body.velocity.x = -50;
+      this.player.body.body.velocity.x = -50;
     } else if (this.cursors.right.isDown) {
-      this.playerBod.body.velocity.x = 50;
+      this.player.body.body.velocity.x = 50;
     } else {
-      this.playerBod.body.velocity.x = 0;
+      this.player.body.body.velocity.x = 0;
     }
     if (this.cursors.up.isDown) {
-      this.playerBod.body.velocity.y = -50;
+      this.player.body.body.velocity.y = -50;
     } else if (this.cursors.down.isDown) {
-      this.playerBod.body.velocity.y = 50;
+      this.player.body.body.velocity.y = 50;
     } else {
-      this.playerBod.body.velocity.y = 0;
+      this.player.body.body.velocity.y = 0;
     }
   }
 
