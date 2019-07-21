@@ -72,9 +72,9 @@ export default class extends Phaser.State {
     this.updateFilter();
 
     this.movables = [];
-    this.player = this.makeMovable(100, 10, 'insect');
+    this.player = this.makeMovable(100, 10, 'penguin');
 
-    const otherBug = this.game.add.sprite(30, 40, 'insect');
+    const otherBug = this.game.add.sprite(30, 40, 'penguin');
     this.collisionGroup.add(otherBug);
     this.game.physics.arcade.enable(otherBug);
     otherBug.body.immovable = true;

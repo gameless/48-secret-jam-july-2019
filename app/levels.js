@@ -1,16 +1,21 @@
 import * as World from './world';
 
+function blankTiles() {
+  const tiles = [];
+  for (let r = 0; r < 20; r += 1) {
+    const row = [];
+    for (let c = 0; c < 30; c += 1) {
+      row.push(World.Tiles.FLOOR);
+    }
+    tiles.push(row);
+  }
+  return tiles;
+}
+
 const levels = [];
 
 const level = {};
-level.tiles = [];
-for (let r = 0; r < 20; r += 1) {
-  const row = [];
-  for (let c = 0; c < 30; c += 1) {
-    row.push(World.Tiles.FLOOR);
-  }
-  level.tiles.push(row);
-}
+level.tiles = blankTiles();
 level.tiles[11][11] = World.Tiles.WALL_RED;
 level.tiles[11][12] = World.Tiles.WALL_RED;
 level.tiles[11][13] = World.Tiles.WALL_BLACK;
