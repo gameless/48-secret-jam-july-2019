@@ -61,6 +61,9 @@ export default class extends Phaser.State {
   updateMovables() {
     this.movables.forEach((movable) => {
       movable.draw.x = Math.round(movable.body.x);
+      if (movable.draw.scale.x < 0) {
+        movable.draw.x += movable.body.width;
+      }
       movable.draw.y = Math.round(movable.body.y);
     });
   }
@@ -103,11 +106,11 @@ export default class extends Phaser.State {
   update() {
     this.game.physics.arcade.collide(this.collisionGroup);
 
-    this.updateMovables();
-
     if (this.cursors.left.isDown) {
+      this.player.draw.scale.x = -1;
       this.player.body.body.velocity.x = -50;
     } else if (this.cursors.right.isDown) {
+      this.player.draw.scale.x = 1;
       this.player.body.body.velocity.x = 50;
     } else {
       this.player.body.body.velocity.x = 0;
@@ -119,5 +122,7 @@ export default class extends Phaser.State {
     } else {
       this.player.body.body.velocity.y = 0;
     }
+
+    this.updateMovables();
   }
 }
