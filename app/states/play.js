@@ -30,9 +30,10 @@ export default class extends Phaser.State {
   }
 
   updateFilter() {
-    this.stage.backgroundColor = this.filter;
+    this.stage.backgroundColor = !this.filter ? 0xffffff : this.filter;
     Object.values(Colors).forEach((color) => {
       this.wallsByColor[color].forEach(({ tile }) => {
+        tile.tint = World.renderWallColor(color, this.filter);
         if (World.isCollidable(color, this.filter)) {
           this.collisionGroup.add(tile);
         } else {
@@ -65,11 +66,10 @@ export default class extends Phaser.State {
   }
 
   create() {
-    this.stage.backgroundColor = '#683f09';
-
     this.collisionGroup = this.game.add.group();
     this.filter = Colors.YELLOW;
     this.makeLevel(Levels[0]);
+    this.updateFilter();
 
     this.movables = [];
     this.player = this.makeMovable(100, 10, 'insect');
